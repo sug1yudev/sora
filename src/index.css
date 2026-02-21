@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
+
+/* ===== Design System: Sora ===== */
+:root {
+  /* 和テイスト カラーパレット — ライトモード */
+  --color-primary: #2B4C7E;        /* 藍色 */
+  --color-primary-light: #3D6098;
+  --color-primary-dark: #1A3A5C;
+  --color-accent: #7BA7BC;         /* 浅葱色 */
+  --color-accent-soft: #A8CCD7;
+
+  --color-bg: #F8F6F3;             /* 生成 (きなり) */
+  --color-bg-secondary: #EFEDE9;
+  --color-bg-tertiary: #E5E2DC;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F2F0EC;
+
+  --color-text: #1A1A1A;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #9A9A9A;
+  --color-text-inverse: #FFFFFF;
+
+  --color-border: #DAD7D0;
+  --color-border-light: #ECEAE5;
+
+  --color-success: #4A8C6F;        /* 松葉色 */
+  --color-danger: #C75C5C;         /* 茜色 */
+  --color-warning: #D4A843;        /* 山吹色 */
+
+  --color-message-mine: #2B4C7E;
+  --color-message-theirs: #EFEDE9;
+  --color-unread: #C75C5C;
+
+  /* タイポグラフィ */
+  --font-primary: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 0.7rem;
+  --font-size-sm: 0.8rem;
+  --font-size-md: 0.95rem;
+  --font-size-lg: 1.15rem;
+  --font-size-xl: 1.4rem;
+  --font-size-2xl: 1.8rem;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* スペーシング */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* ボーダー */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 50%;
+
+  /* シャドウ */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-glow: 0 0 20px rgba(43,76,126,0.15);
+
+  /* トランジション */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* レイアウト */
+  --navbar-height: 64px;
+  --header-height: 60px;
+  --max-width: 480px;
+}
+
+/* ダークモード */
+[data-theme="dark"] {
+  --color-primary: #5B8DB8;
+  --color-primary-light: #6FA3D0;
+  --color-primary-dark: #4A7CA6;
+  --color-accent: #7BA7BC;
+  --color-accent-soft: #5A8A9E;
+
+  --color-bg: #0F1419;
+  --color-bg-secondary: #1A2029;
+  --color-bg-tertiary: #242C38;
+  --color-surface: #1E2530;
+  --color-surface-hover: #283040;
+
+  --color-text: #E8E6E3;
+  --color-text-secondary: #9A9A9A;
+  --color-text-tertiary: #6B6B6B;
+  --color-text-inverse: #1A1A1A;
+
+  --color-border: #2A3040;
+  --color-border-light: #1E2530;
+
+  --color-message-mine: #2B4C7E;
+  --color-message-theirs: #1E2530;
+  --color-unread: #E07070;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 20px rgba(91,141,184,0.2);
+}
+
+/* ===== リセット & ベース ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100dvh;
+  transition: background var(--transition-normal), color var(--transition-normal);
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-bg);
+  box-shadow: var(--shadow-lg);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  color: inherit;
+}
+
+input, textarea {
+  font-family: var(--font-primary);
+  border: none;
+  outline: none;
+  background: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ===== ユーティリティ ===== */
+.fade-in {
+  animation: fadeIn var(--transition-slow) forwards;
+}
+
+.slide-up {
+  animation: slideUp var(--transition-slow) forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 300ms ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* スクロールバー */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}

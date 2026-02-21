@@ -1,0 +1,33 @@
+.avatar {
+    position: relative;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.5px;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.avatar__initials {
+    line-height: 1;
+}
+
+.avatar__status {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background: var(--color-text-tertiary);
+    border: 2.5px solid var(--color-bg);
+    transition: background var(--transition-fast);
+}
+
+.avatar__status--online {
+    background: var(--color-success);
+}
