@@ -10,13 +10,15 @@ export default function ChatRoom() {
     const { chatId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { chats, getParticipant, getMessages, sendMessage, sendImage, markAsRead } = useChat();
+    const { chats, getParticipant, getMessages, sendMessage, sendImage, markAsRead, typingUsers, emitTyping, emitStopTyping, joinChat } = useChat();
     const [text, setText] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
     const [msgs, setMsgs] = useState([]);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const fileInputRef = useRef(null);
+    const typingTimeoutRef = useRef(null);
+    const isTyping = !!typingUsers[chatId];
 
     const chat = chats.find(c => c.id === chatId);
     const participant = chat ? getParticipant(chat.participantId) : null;
@@ -25,13 +27,21 @@ export default function ChatRoom() {
     useEffect(() => {
         if (chatId) {
             markAsRead(chatId);
+            joinChat(chatId);
             getMessages(chatId).then(m => setMsgs(m || []));
         }
-    }, [chatId, markAsRead, getMessages]);
+    }, [chatId, markAsRead, getMessages, joinChat]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [msgs]);
+
+    const handleTextChange = (e) => {
+        setText(e.target.value);
+        emitTyping(chatId);
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => emitStopTyping(chatId), 2000);
+    };
 
     const handleSend = (e) => {
         e.preventDefault();
@@ -44,6 +54,7 @@ export default function ChatRoom() {
         if (!trimmed) return;
         sendMessage(chatId, trimmed);
         setText('');
+        clearTimeout(typingTimeoutRef.current);
         inputRef.current?.focus();
     };
 
@@ -82,7 +93,7 @@ export default function ChatRoom() {
                 <div className="chatroom__header-info">
                     <h2 className="chatroom__header-name">{participant.name}</h2>
                     <span className={`chatroom__header-status ${participant.online ? 'chatroom__header-status--online' : ''}`}>
-                        {participant.online ? 'オンライン' : 'オフライン'}
+                        {isTyping ? '入力中...' : participant.online ? 'オンライン' : 'オフライン'}
                     </span>
                 </div>
             </header>
@@ -143,7 +154,7 @@ export default function ChatRoom() {
                     className="chatroom__input"
                     type="text"
                     value={text}
-                    onChange={e => setText(e.target.value)}
+                    onChange={handleTextChange}
                     placeholder="メッセージを入力..."
                     autoComplete="off"
                 />

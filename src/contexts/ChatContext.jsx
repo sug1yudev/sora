@@ -8,6 +8,7 @@ export function ChatProvider({ children }) {
     const [chats, setChats] = useState([]);
     const [allMessages, setAllMessages] = useState({});
     const [users, setUsers] = useState([]);
+    const [typingUsers, setTypingUsers] = useState({}); // { chatId: userId }
     const socketRef = useRef(null);
 
     // Socket.io接続
@@ -29,11 +30,29 @@ export function ChatProvider({ children }) {
                     ? { ...c, lastMessage: message.imageUrl ? '📷 写真' : message.text, lastMessageTime: message.time }
                     : c
             ));
+            // メッセージ受信時にtyping表示を消す
+            setTypingUsers(prev => {
+                const next = { ...prev };
+                delete next[chatId];
+                return next;
+            });
         });
 
         socket.on('user_online', ({ userId, online }) => {
             setUsers(prev => prev.map(u => u.id === userId ? { ...u, online } : u));
             setChats(prev => prev.map(c => c.participantId === userId ? { ...c, participantOnline: online } : c));
+        });
+
+        // 入力中表示
+        socket.on('typing', ({ chatId, userId }) => {
+            setTypingUsers(prev => ({ ...prev, [chatId]: userId }));
+        });
+        socket.on('stop_typing', ({ chatId }) => {
+            setTypingUsers(prev => {
+                const next = { ...prev };
+                delete next[chatId];
+                return next;
+            });
         });
 
         return () => { socket.disconnect(); };
@@ -80,7 +99,6 @@ export function ChatProvider({ children }) {
         try {
             const data = await api.sendMessage(chatId, text, null);
             const msg = data.message;
-
             setAllMessages(prev => ({
                 ...prev,
                 [chatId]: [...(prev[chatId] || []), msg],
@@ -88,18 +106,15 @@ export function ChatProvider({ children }) {
             setChats(prev => prev.map(c =>
                 c.id === chatId ? { ...c, lastMessage: text, lastMessageTime: msg.time } : c
             ));
-
-            // Socket.ioで他のクライアントに通知
             socketRef.current?.emit('send_message', { chatId, message: msg });
+            socketRef.current?.emit('stop_typing', { chatId });
         } catch (e) { console.error('Failed to send:', e); }
     }, []);
 
     const sendImage = useCallback(async (chatId, imageFile) => {
         try {
-            // ファイルかDataURLか判定
             let imageUrl;
             if (typeof imageFile === 'string') {
-                // DataURL → Blobに変換してアップロード
                 const res = await fetch(imageFile);
                 const blob = await res.blob();
                 const file = new File([blob], 'image.jpg', { type: blob.type });
@@ -107,10 +122,8 @@ export function ChatProvider({ children }) {
             } else {
                 imageUrl = await api.uploadImage(imageFile);
             }
-
             const data = await api.sendMessage(chatId, '', imageUrl);
             const msg = data.message;
-
             setAllMessages(prev => ({
                 ...prev,
                 [chatId]: [...(prev[chatId] || []), msg],
@@ -118,7 +131,6 @@ export function ChatProvider({ children }) {
             setChats(prev => prev.map(c =>
                 c.id === chatId ? { ...c, lastMessage: '📷 写真', lastMessageTime: msg.time } : c
             ));
-
             socketRef.current?.emit('send_message', { chatId, message: msg });
         } catch (e) { console.error('Failed to send image:', e); }
     }, []);
@@ -129,10 +141,22 @@ export function ChatProvider({ children }) {
         ));
     }, []);
 
+    // 入力中イベント送信
+    const emitTyping = useCallback((chatId) => {
+        socketRef.current?.emit('typing', { chatId });
+    }, []);
+    const emitStopTyping = useCallback((chatId) => {
+        socketRef.current?.emit('stop_typing', { chatId });
+    }, []);
+
+    // チャットルーム参加
+    const joinChat = useCallback((chatId) => {
+        socketRef.current?.emit('join_chat', chatId);
+    }, []);
+
     const startNewChat = useCallback(async (participantId) => {
         const existing = chats.find(c => c.participantId === participantId);
         if (existing) return existing.id;
-
         try {
             const data = await api.createChat(participantId);
             await loadChats();
@@ -145,7 +169,10 @@ export function ChatProvider({ children }) {
 
     return (
         <ChatContext.Provider value={{
-            chats, users, getParticipant, getMessages, sendMessage, sendImage, markAsRead, startNewChat, loadChats
+            chats, users, typingUsers,
+            getParticipant, getMessages, sendMessage, sendImage,
+            markAsRead, startNewChat, loadChats,
+            emitTyping, emitStopTyping, joinChat
         }}>
             {children}
         </ChatContext.Provider>

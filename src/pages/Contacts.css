@@ -95,3 +95,15 @@
     text-align: center;
     color: var(--color-text-tertiary);
 }
+
+.contacts__searching {
+    padding: var(--space-sm) var(--space-lg);
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+}
+
+.contacts__hint {
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-xs);
+    opacity: 0.6;
+}

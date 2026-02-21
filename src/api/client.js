@@ -1,5 +1,6 @@
-// ローカル開発時: const API_URL = 'http://localhost:3001';
-const API_URL = 'https://sora-server-rka6.onrender.com';
+const API_URL = import.meta.env.PROD
+    ? 'https://sora-server-rka6.onrender.com'
+    : 'http://localhost:3001';
 
 class ApiClient {
     constructor() {
@@ -39,6 +40,7 @@ class ApiClient {
 
     // ユーザー
     getUsers() { return this.request('/api/users'); }
+    searchUsers(query) { return this.request(`/api/users/search?q=${encodeURIComponent(query)}`); }
 
     // 画像アップロード
     async uploadImage(file) {

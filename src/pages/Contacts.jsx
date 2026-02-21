@@ -1,19 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChat } from '../contexts/ChatContext';
+import { api } from '../api/client';
 import Avatar from '../components/Avatar';
 import SearchBar from '../components/SearchBar';
 import './Contacts.css';
 
 export default function Contacts() {
     const [search, setSearch] = useState('');
+    const [searchResults, setSearchResults] = useState(null);
+    const [searching, setSearching] = useState(false);
     const { startNewChat, users } = useChat();
     const navigate = useNavigate();
 
-    const filtered = users.filter(u =>
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.status.toLowerCase().includes(search.toLowerCase())
-    );
+    // サーバー検索（メール/名前）
+    useEffect(() => {
+        if (search.length < 2) {
+            setSearchResults(null);
+            return;
+        }
+        const timer = setTimeout(async () => {
+            setSearching(true);
+            try {
+                const data = await api.searchUsers(search);
+                setSearchResults(data.users);
+            } catch { setSearchResults(null); }
+            setSearching(false);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const displayUsers = searchResults ?? users;
 
     const handleStartChat = async (userId) => {
         const chatId = await startNewChat(userId);
@@ -28,16 +45,23 @@ export default function Contacts() {
             </header>
 
             <div className="contacts__search">
-                <SearchBar value={search} onChange={setSearch} placeholder="連絡先を検索..." />
+                <SearchBar value={search} onChange={setSearch} placeholder="名前やメールアドレスで検索..." />
             </div>
 
+            {searching && (
+                <div className="contacts__searching">
+                    <span>検索中...</span>
+                </div>
+            )}
+
             <div className="contacts__list">
-                {filtered.length === 0 ? (
+                {displayUsers.length === 0 ? (
                     <div className="contacts__empty">
-                        <p>連絡先が見つかりません</p>
+                        <p>{search ? '一致するユーザーが見つかりません' : '連絡先がまだありません'}</p>
+                        {search && <p className="contacts__hint">メールアドレスで検索してみてください</p>}
                     </div>
                 ) : (
-                    filtered.map((user, i) => (
+                    displayUsers.map((user, i) => (
                         <button
                             key={user.id}
                             className="contacts__item slide-up"
@@ -47,7 +71,9 @@ export default function Contacts() {
                             <Avatar name={user.name} size={48} online={user.online} />
                             <div className="contacts__item-info">
                                 <span className="contacts__item-name">{user.name}</span>
-                                <span className="contacts__item-status">{user.status}</span>
+                                <span className="contacts__item-status">
+                                    {user.email ? user.email : user.status}
+                                </span>
                             </div>
                             <svg className="contacts__item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="9 18 15 12 9 6" />
