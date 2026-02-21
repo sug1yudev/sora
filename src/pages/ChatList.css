@@ -6,6 +6,9 @@
 }
 
 .chatlist__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: var(--space-lg) var(--space-lg) var(--space-sm);
 }
 
@@ -14,6 +17,31 @@
     font-weight: var(--font-weight-bold);
     color: var(--color-text);
     letter-spacing: 1px;
+}
+
+.chatlist__new-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.chatlist__new-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.chatlist__new-btn:hover {
+    transform: scale(1.1);
+}
+
+.chatlist__new-btn:active {
+    transform: scale(0.95);
 }
 
 .chatlist__search {
@@ -108,4 +136,152 @@
     text-align: center;
     color: var(--color-text-tertiary);
     font-size: var(--font-size-md);
+}
+
+.chatlist__empty-btn {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    transition: transform var(--transition-fast);
+}
+
+.chatlist__empty-btn:hover {
+    transform: scale(1.05);
+}
+
+/* 新規チャットモーダル */
+.chatlist__modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+    animation: fadeIn 0.15s ease;
+}
+
+.chatlist__modal {
+    width: min(400px, 90vw);
+    max-height: 60vh;
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.chatlist__modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.chatlist__modal-header h2 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.chatlist__modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    color: var(--color-text-tertiary);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast);
+}
+
+.chatlist__modal-close:hover {
+    background: var(--color-surface-hover);
+}
+
+.chatlist__modal-search {
+    padding: var(--space-md) var(--space-lg);
+}
+
+.chatlist__modal-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.chatlist__modal-input:focus {
+    border-color: var(--color-primary);
+}
+
+.chatlist__modal-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 var(--space-sm) var(--space-sm);
+}
+
+.chatlist__modal-status {
+    padding: var(--space-lg);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+}
+
+.chatlist__modal-user {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-lg);
+    text-align: left;
+    transition: background var(--transition-fast);
+}
+
+.chatlist__modal-user:hover {
+    background: var(--color-surface-hover);
+}
+
+.chatlist__modal-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chatlist__modal-user-name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text);
+}
+
+.chatlist__modal-user-email {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
 }
