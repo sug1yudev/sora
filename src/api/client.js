@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3001';
+// ローカル開発時: const API_URL = 'http://localhost:3001';
+const API_URL = 'https://sora-server-rka6.onrender.com';
 
 class ApiClient {
     constructor() {
